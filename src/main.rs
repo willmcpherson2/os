@@ -5,6 +5,7 @@
 #![test_runner(test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+mod gdt;
 mod interrupts;
 mod serial;
 mod vga_buffer;
@@ -31,6 +32,7 @@ pub extern "C" fn _start() -> ! {
     println!("Hello World{}", "!");
 
     interrupts::init();
+    gdt::init();
 
     #[cfg(test)]
     test_main();
