@@ -7,6 +7,14 @@ use x86_64::VirtAddr;
 
 pub const DOUBLE_FAULT_IST_INDEX: u16 = 0;
 
+pub fn init() {
+    GDT.gdt.load();
+    unsafe {
+        CS::set_reg(GDT.code_selector);
+        load_tss(GDT.tss_selector);
+    }
+}
+
 struct Gdt {
     gdt: GlobalDescriptorTable,
     code_selector: SegmentSelector,
@@ -39,12 +47,4 @@ lazy_static! {
             tss_selector,
         }
     };
-}
-
-pub fn init() {
-    GDT.gdt.load();
-    unsafe {
-        CS::set_reg(GDT.code_selector);
-        load_tss(GDT.tss_selector);
-    }
 }
