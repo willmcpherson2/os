@@ -8,7 +8,7 @@
 mod gdt;
 mod interrupts;
 mod serial;
-mod vga_buffer;
+mod vga;
 
 use core::panic::PanicInfo;
 use x86_64::instructions::port::Port;
