@@ -23,13 +23,14 @@ fn panic(info: &PanicInfo) -> ! {
 #[cfg(test)]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    serial_println!("{}", info);
+    serialn!("{}", info);
     exit_qemu(QemuExitCode::Failed);
 }
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    println!("Hello World{}", "!");
+    serialn!("Hello serial world{}", "!");
+    println!("Hello VGA world{}", "!");
 
     interrupts::init();
     gdt::init();
@@ -37,7 +38,8 @@ pub extern "C" fn _start() -> ! {
     #[cfg(test)]
     test_main();
 
-    println!("It did not crash!");
+    serialn!("We did not crash!");
+    println!("We did not crash!");
 
     loop {}
 }
@@ -59,11 +61,11 @@ pub fn exit_qemu(exit_code: QemuExitCode) -> ! {
 
 #[cfg(test)]
 fn test_runner(tests: &[&dyn Fn()]) {
-    serial_println!("Running {} tests", tests.len());
+    serialn!("Running {} tests", tests.len());
     for test in tests {
         test();
     }
-    serial_println!("Tests passed");
+    serialn!("Tests passed");
     exit_qemu(QemuExitCode::Success);
 }
 
