@@ -18,11 +18,13 @@ macro_rules! serialn {
     ($fmt:expr, $($arg:tt)*) => ($crate::serial!(concat!($fmt, "\n"), $($arg)*));
 }
 
+const SERIAL_ADDRESS: u16 = 0x3F8;
+
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
     lazy_static! {
         static ref SERIAL1: Mutex<SerialPort> = {
-            let mut serial_port = unsafe { SerialPort::new(0x3F8) };
+            let mut serial_port = unsafe { SerialPort::new(SERIAL_ADDRESS) };
             serial_port.init();
             Mutex::new(serial_port)
         };
