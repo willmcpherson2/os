@@ -2,6 +2,7 @@ use core::fmt::{self, Write};
 use lazy_static::lazy_static;
 use spin::Mutex;
 use volatile::Volatile;
+use x86_64::instructions::interrupts::without_interrupts;
 
 #[macro_export]
 macro_rules! print {
@@ -85,7 +86,9 @@ pub fn _print(args: fmt::Arguments) {
         });
     }
 
-    VGA.lock().write_fmt(args).unwrap();
+    without_interrupts(|| {
+        VGA.lock().write_fmt(args).unwrap();
+    });
 }
 
 fn screen_char(ch: u8) -> u16 {

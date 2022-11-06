@@ -17,7 +17,7 @@ use x86_64::instructions::port::Port;
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     println!("{}", info);
-    loop {}
+    hlt_loop();
 }
 
 #[cfg(test)]
@@ -27,13 +27,19 @@ fn panic(info: &PanicInfo) -> ! {
     exit_qemu(QemuExitCode::Failed);
 }
 
+pub fn hlt_loop() -> ! {
+    loop {
+        x86_64::instructions::hlt();
+    }
+}
+
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     serialn!("Hello serial world{}", "!");
     println!("Hello VGA world{}", "!");
 
-    interrupt::init();
     gdt::init();
+    interrupt::init();
 
     #[cfg(test)]
     test_main();
@@ -41,7 +47,7 @@ pub extern "C" fn _start() -> ! {
     serialn!("We did not crash!");
     println!("We did not crash!");
 
-    loop {}
+    hlt_loop();
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -56,7 +62,7 @@ pub fn exit_qemu(exit_code: QemuExitCode) -> ! {
         let mut port = Port::new(0xf4);
         port.write(exit_code as u32);
     }
-    loop {}
+    hlt_loop();
 }
 
 #[cfg(test)]
